@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daymark | Personal task planner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Manrope', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif']
+          },
+          colors: {
+            ink: '#17211b',
+            moss: '#315c48',
+            mint: '#dcefe3',
+            sun: '#f5c968',
+            paper: '#f7f8f3'
+          },
+          boxShadow: {
+            soft: '0 18px 50px rgba(38, 65, 50, 0.09)'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="min-h-screen bg-paper font-body text-ink antialiased">
+  <!-- Decorative background shapes stay separate from the interactive content. -->
+  <div class="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
+    <div class="absolute -right-24 -top-32 h-96 w-96 rounded-full bg-[#e8f0dd]"></div>
+    <div class="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-[#f9e8bc] opacity-60"></div>
+  </div>
+
+  <!-- The sidebar controls the current task view; the section contains the task workflow. -->
+  <main class="relative mx-auto flex min-h-screen max-w-7xl flex-col px-5 py-6 sm:px-8 lg:flex-row lg:gap-10 lg:px-12 lg:py-10">
+    <aside class="mb-8 flex w-full flex-col justify-between lg:mb-0 lg:w-64 lg:shrink-0">
+      <div>
+        <div class="mb-12 flex items-center gap-3">
+          <div class="grid h-10 w-10 place-items-center rounded-2xl bg-moss text-white shadow-lg shadow-moss/20">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          </div>
+          <span class="font-display text-xl font-extrabold tracking-tight">daymark</span>
+        </div>
+
+        <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Your space</p>
+        <nav class="space-y-1" aria-label="Task views">
+          <button data-filter="all" class="nav-filter flex w-full items-center justify-between rounded-xl bg-white px-3 py-3 text-left text-sm font-bold text-moss shadow-sm transition hover:-translate-y-0.5" aria-current="page">
+            <span class="flex items-center gap-3"><span class="text-lg">◉</span> All tasks</span><span id="all-count" class="rounded-full bg-mint px-2 py-0.5 text-xs text-moss">0</span>
+          </button>
+          <button data-filter="today" class="nav-filter flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-500 transition hover:bg-white hover:text-moss"><span class="text-lg">◷</span> Today</button>
+          <button data-filter="important" class="nav-filter flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-500 transition hover:bg-white hover:text-moss"><span class="text-lg">✦</span> Important</button>
+          <button data-filter="completed" class="nav-filter flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-500 transition hover:bg-white hover:text-moss"><span class="text-lg">✓</span> Completed</button>
+        </nav>
+      </div>
+
+      <div class="hidden rounded-2xl bg-moss p-5 text-white lg:block">
+        <div class="mb-4 flex items-center justify-between"><span class="text-xs font-bold uppercase tracking-widest text-mint">Focus</span><span class="text-lg">✳</span></div>
+        <p class="font-display text-lg font-bold leading-snug">Small steps make a clear day.</p>
+        <div class="mt-5 h-1.5 overflow-hidden rounded-full bg-white/20"><div id="progress-bar" class="h-full w-0 rounded-full bg-sun transition-all duration-500"></div></div>
+        <p id="progress-label" class="mt-2 text-xs text-mint">0% complete</p>
+      </div>
+    </aside>
+
+    <section class="min-w-0 flex-1">
+      <header class="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+        <div>
+          <p id="date-label" class="mb-2 text-sm font-semibold text-moss">Monday, September 21</p>
+          <h1 class="font-display text-4xl font-extrabold tracking-[-0.04em] text-ink sm:text-5xl">Good morning<span class="text-moss">.</span></h1>
+          <p class="mt-2 text-sm text-slate-500">Let’s make space for what matters today.</p>
+        </div>
+        <div class="flex items-center gap-2 text-sm font-semibold text-slate-500"><span class="h-2 w-2 rounded-full bg-emerald-400"></span> Saved locally</div>
+      </header>
+
+      <div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div class="rounded-2xl bg-white p-4 shadow-soft"><p class="text-xs font-semibold text-slate-400">Remaining</p><p id="remaining-stat" class="mt-1 font-display text-2xl font-extrabold">0</p></div>
+        <div class="rounded-2xl bg-white p-4 shadow-soft"><p class="text-xs font-semibold text-slate-400">Completed</p><p id="completed-stat" class="mt-1 font-display text-2xl font-extrabold text-moss">0</p></div>
+        <div class="col-span-2 rounded-2xl bg-[#f6e8bd] p-4 shadow-soft sm:col-span-1"><p class="text-xs font-semibold text-[#8b6b1d]">Your focus</p><p id="focus-stat" class="mt-1 truncate font-display text-lg font-extrabold text-[#715511]">No tasks yet</p></div>
+      </div>
+
+      <form id="task-form" class="mb-5 rounded-2xl bg-moss p-2 shadow-xl shadow-moss/10 sm:flex sm:items-center">
+        <label for="task-input" class="sr-only">Add a new task</label>
+        <input id="task-input" required autocomplete="off" class="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm font-semibold text-white outline-none placeholder:text-white/55" placeholder="What needs your attention?" />
+        <div class="flex items-center gap-2 border-t border-white/15 px-2 pt-2 sm:border-0 sm:pt-0">
+          <select id="priority-input" class="rounded-lg border-0 bg-white/10 px-2 py-2 text-xs font-bold text-white outline-none [&>option]:text-ink" aria-label="Task priority"><option value="low">Low priority</option><option value="medium" selected>Medium priority</option><option value="high">High priority</option></select>
+          <button class="rounded-xl bg-sun px-4 py-2.5 text-sm font-extrabold text-ink transition hover:-translate-y-0.5 hover:bg-[#f8d47f]" type="submit">Add task <span class="ml-1">+</span></button>
+        </div>
+      </form>
+
+      <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-1 rounded-xl bg-white p-1 shadow-sm" role="tablist" aria-label="Task filters">
+          <button data-status="all" class="status-filter rounded-lg bg-mint px-3 py-2 text-xs font-bold text-moss" aria-selected="true">All</button>
+          <button data-status="active" class="status-filter rounded-lg px-3 py-2 text-xs font-bold text-slate-400" aria-selected="false">Active</button>
+          <button data-status="done" class="status-filter rounded-lg px-3 py-2 text-xs font-bold text-slate-400" aria-selected="false">Done</button>
+        </div>
+        <div class="relative">
+          <label for="search-input" class="sr-only">Search tasks</label>
+          <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
+          <input id="search-input" class="w-full rounded-xl border-0 bg-white py-2.5 pl-9 pr-3 text-sm outline-none ring-1 ring-transparent transition placeholder:text-slate-400 focus:ring-moss sm:w-56" placeholder="Search tasks" />
+        </div>
+      </div>
+
+      <div id="task-list" class="space-y-3" aria-live="polite"></div>
+      <div id="empty-state" class="hidden rounded-2xl border-2 border-dashed border-slate-200 px-6 py-14 text-center"><div class="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full bg-mint text-2xl text-moss">✓</div><h2 class="font-display text-lg font-extrabold">Nothing here yet</h2><p class="mt-1 text-sm text-slate-500">Add a task above and keep your day moving.</p></div>
+      <div class="mt-5 flex justify-end"><button id="clear-completed" class="hidden text-xs font-bold text-slate-400 transition hover:text-red-500">Clear completed</button></div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
